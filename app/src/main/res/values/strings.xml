@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">BakingApp</string>
+    <string name="recipe_image_content_description">Image of the recipe</string>
+    <string name="error_download_json">There was an error while downloading the list of recipes</string>
 </resources>
