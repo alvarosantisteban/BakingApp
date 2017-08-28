@@ -1,6 +1,7 @@
 package com.alvarosantisteban.bakingapp;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,9 +28,12 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 public class RecipesActivity extends AppCompatActivity {
 
     private static final String TAG = RecipesActivity.class.getSimpleName();
+    private static final String LIST_POS = "bundleListPos";
 
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
+    private int currentPosition;
+    private boolean hasBeenScrolledAutomatically;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +46,24 @@ public class RecipesActivity extends AppCompatActivity {
         // TODO Set a GridLayout for tablet
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // TODO Ensure that the list position remains on orientation change
-        downloadInitialJson();
+        if(savedInstanceState != null) {
+            currentPosition = savedInstanceState.getInt(LIST_POS);
+        }
+
+        if(Utils.isNetworkAvailable(this)) {
+            downloadInitialJson();
+        } else {
+            Toast.makeText(this, getString(R.string.error_no_internet_connection), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Save list's position
+        currentPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+        outState.putInt(LIST_POS, currentPosition);
     }
 
     /**
@@ -71,6 +91,8 @@ public class RecipesActivity extends AppCompatActivity {
 
                         RecipesAdapter adapter = new RecipesAdapter(Arrays.asList(recipeList), RecipesActivity.this);
                         recyclerView.setAdapter(adapter);
+
+                        scrollToLastVisitedPosition();
                     }
                 }
             }
@@ -82,5 +104,18 @@ public class RecipesActivity extends AppCompatActivity {
                 Toast.makeText(RecipesActivity.this, R.string.error_download_json, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void scrollToLastVisitedPosition() {
+        if(!hasBeenScrolledAutomatically) {
+            Handler handler = new Handler();
+            Runnable r = new Runnable() {
+                public void run() {
+                    recyclerView.scrollToPosition(currentPosition);
+                    hasBeenScrolledAutomatically = true;
+                }
+            };
+            handler.postDelayed(r, 200);
+        }
     }
 }
