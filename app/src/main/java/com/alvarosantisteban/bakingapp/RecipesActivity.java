@@ -1,5 +1,6 @@
 package com.alvarosantisteban.bakingapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -26,10 +27,12 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 /**
  * Download the json with the recipes and displays them to the user.
  */
-public class RecipesActivity extends AppCompatActivity {
+public class RecipesActivity extends AppCompatActivity implements RecipesAdapter.OnItemClickListener {
 
     private static final String TAG = RecipesActivity.class.getSimpleName();
+
     private static final String LIST_POS = "bundleListPos";
+    static final String RECIPE_EXTRA = "recipeExtra";
 
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
@@ -89,7 +92,7 @@ public class RecipesActivity extends AppCompatActivity {
                     if (recipeList != null && recipeList.length > 0) {
                         progressBar.setVisibility(View.GONE);
 
-                        RecipesAdapter adapter = new RecipesAdapter(Arrays.asList(recipeList), RecipesActivity.this);
+                        RecipesAdapter adapter = new RecipesAdapter(Arrays.asList(recipeList), RecipesActivity.this, RecipesActivity.this);
                         recyclerView.setAdapter(adapter);
 
                         scrollToLastVisitedPosition();
@@ -117,5 +120,13 @@ public class RecipesActivity extends AppCompatActivity {
             };
             handler.postDelayed(r, 200);
         }
+    }
+
+    @Override
+    public void onItemClick(Recipe recipe) {
+        // Go to master-detail activity
+        Intent intent = new Intent(this, RecipeStepListActivity.class);
+        intent.putExtra(RECIPE_EXTRA, recipe);
+        startActivity(intent);
     }
 }

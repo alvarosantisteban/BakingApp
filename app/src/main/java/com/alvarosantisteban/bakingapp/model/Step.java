@@ -1,5 +1,8 @@
 package com.alvarosantisteban.bakingapp.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Models a a cooking recipe step.
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class Step {
+public class Step implements Parcelable{
 
     private final int id;
     private final String shortDescription;
@@ -53,5 +56,39 @@ public class Step {
 
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    protected Step(Parcel in) {
+        id = in.readInt();
+        shortDescription = in.readString();
+        description = in.readString();
+        videoUrl = in.readString();
+        imageUrl = in.readString();
+    }
+
+    public static final Creator<Step> CREATOR = new Creator<Step>() {
+        @Override
+        public Step createFromParcel(Parcel in) {
+            return new Step(in);
+        }
+
+        @Override
+        public Step[] newArray(int size) {
+            return new Step[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return Parcelable.CONTENTS_FILE_DESCRIPTOR;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(shortDescription);
+        parcel.writeString(description);
+        parcel.writeString(videoUrl);
+        parcel.writeString(imageUrl);
     }
 }

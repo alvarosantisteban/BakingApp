@@ -5,4 +5,6 @@
 
     <string name="error_download_json">There was an error while downloading the list of recipes</string>
     <string name="error_no_internet_connection">You have no internet connection</string>
+    <string name="title_recipestep_list">RecipeSteps</string>
+    <string name="title_recipestep_detail">RecipeStep Detail</string>
 </resources>
