@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -43,8 +44,7 @@ public class RecipesActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         recyclerView = (RecyclerView) findViewById(R.id.recipes_list);
 
-        // TODO Set a GridLayout for tablet
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(Utils.isTablet(this) ? new GridLayoutManager(this, 2) : new LinearLayoutManager(this));
 
         if(savedInstanceState != null) {
             currentPosition = savedInstanceState.getInt(LIST_POS);
