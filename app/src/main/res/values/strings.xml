@@ -7,4 +7,5 @@
     <string name="error_no_internet_connection">You have no internet connection</string>
     <string name="title_recipestep_list">RecipeSteps</string>
     <string name="title_recipestep_detail">RecipeStep Detail</string>
+    <string name="recipe_ingredient_title">Recipe ingredients</string>
 </resources>
