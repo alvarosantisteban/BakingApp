@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.alvarosantisteban.bakingapp.model.Ingredient;
@@ -56,7 +58,18 @@ public class RecipeStepDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.recipestep_detail, container, false);
         String title = selectedStep != null ? selectedStep.getDescription() : ingredients.get(0).getIngredient();
-        ((TextView) rootView.findViewById(R.id.recipestep_detail)).setText(title);
+        ((TextView) rootView.findViewById(R.id.recipe_step_description)).setText(title);
+        FrameLayout frameLayout = (FrameLayout) rootView.findViewById(R.id.recipe_step_upper_area);
+        if(selectedStep != null) {
+            if (!TextUtils.isEmpty(selectedStep.getVideoUrl())) {
+                frameLayout.addView(inflater.inflate(R.layout.recipestep_video, container, false));
+            } else if(!TextUtils.isEmpty(selectedStep.getImageUrl())) {
+                frameLayout.addView(inflater.inflate(R.layout.recipestep_image, container, false));
+            }
+        } else {
+            // TODO Display ingredients
+
+        }
 
         return rootView;
     }
