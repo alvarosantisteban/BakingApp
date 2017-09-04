@@ -1,7 +1,6 @@
 package com.alvarosantisteban.bakingapp;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +16,10 @@ import java.util.List;
  */
 class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.RecipeStepViewHolder> {
 
+    static final int NO_STEP_SELECTED_POS = -1;
+
     public interface OnItemClickListener {
-        /**
-         * The Step passed by param was clicked.
-         * @param recipeStep the clicked Step, or null if the recipe ingredient's item was clicked.
-         */
-        void onItemClick(@Nullable Step recipeStep);
+        void onItemClick(int stepPosition);
     }
 
     private static final int INGREDIENT_TYPE = 0;
@@ -47,11 +44,11 @@ class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.RecipeS
     public void onBindViewHolder(RecipeStepViewHolder holder, int position) {
         switch(holder.getItemViewType()) {
             case INGREDIENT_TYPE:
-                holder.setListener(null);
+                holder.setListener(NO_STEP_SELECTED_POS);
             break;
             case STEP_TYPE:
                 holder.setStepName(recipeSteps.get(position-1).getShortDescription());
-                holder.setListener(recipeSteps.get(position-1));
+                holder.setListener(position-1);
             break;
             default:
                 throw new NoSuchFieldError("There is no such type.");
@@ -81,10 +78,10 @@ class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.RecipeS
             text.setText(stepName);
         }
 
-        void setListener(@Nullable final Step step) {
+        void setListener(final int stepPosition) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    onItemClickListener.onItemClick(step);
+                    onItemClickListener.onItemClick(stepPosition);
                 }
             });
         }

@@ -2,8 +2,6 @@ package com.alvarosantisteban.bakingapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -11,9 +9,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.alvarosantisteban.bakingapp.model.Recipe;
-import com.alvarosantisteban.bakingapp.model.Step;
-
-import java.util.ArrayList;
 
 /**
  * An activity representing a list of RecipeSteps. This activity
@@ -76,11 +71,12 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
     }
 
     @Override
-    public void onItemClick(@Nullable Step recipeStep) {
+    public void onItemClick(int stepPosition) {
         if (isTwoPane) {
             Bundle arguments = new Bundle();
-            arguments.putParcelable(RecipeStepDetailFragment.ARG_RECIPE_STEP, recipeStep);
-            arguments.putParcelableArrayList(RecipeStepDetailFragment.ARG_RECIPE_INGREDIENTS, (ArrayList<? extends Parcelable>) recipe.getIngredients());
+            arguments.putParcelable(RecipeStepDetailFragment.ARG_RECIPE, recipe);
+            arguments.putInt(RecipeStepDetailFragment.ARG_RECIPE_STEP_POS, stepPosition);
+            arguments.putBoolean(RecipeStepDetailFragment.ARG_IS_TWO_PANE, isTwoPane);
             RecipeStepDetailFragment fragment = new RecipeStepDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
@@ -88,8 +84,9 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
                     .commit();
         } else {
             Intent intent = new Intent(this, RecipeStepDetailActivity.class);
-            intent.putExtra(RecipeStepDetailFragment.ARG_RECIPE_STEP, recipeStep);
-            intent.putExtra(RecipeStepDetailFragment.ARG_RECIPE_INGREDIENTS, (ArrayList<? extends Parcelable>) recipe.getIngredients());
+            intent.putExtra(RecipeStepDetailFragment.ARG_RECIPE, recipe);
+            intent.putExtra(RecipeStepDetailFragment.ARG_RECIPE_STEP_POS, stepPosition);
+            intent.putExtra(RecipeStepDetailFragment.ARG_IS_TWO_PANE, isTwoPane);
 
             startActivity(intent);
         }
