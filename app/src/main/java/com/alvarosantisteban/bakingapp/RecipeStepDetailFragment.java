@@ -1,8 +1,6 @@
 package com.alvarosantisteban.bakingapp;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -49,14 +47,10 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             selectedStepPos = getArguments().getInt(ARG_RECIPE_STEP_POS);
             isTwoPane = getArguments().getBoolean(ARG_IS_TWO_PANE);
 
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null) {
-                String title = selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS ?
-                        selectedRecipe.getSteps().get(selectedStepPos).getShortDescription() :
-                        selectedRecipe.getIngredients().get(0).getIngredient();
-                appBarLayout.setTitle(title);
-            }
+            String title = selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS ?
+                    selectedRecipe.getSteps().get(selectedStepPos).getShortDescription() :
+                    selectedRecipe.getIngredients().get(0).getIngredient();
+            getActivity().setTitle(title);
         }
     }
 
