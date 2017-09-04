@@ -32,6 +32,11 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     private Recipe selectedRecipe;
     private boolean isTwoPane;
 
+    private ImageView previous;
+    private ImageView next;
+    private TextView descriptionTextView;
+    private FrameLayout frameLayout;
+
     public RecipeStepDetailFragment() {
     }
 
@@ -61,10 +66,11 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         String description = selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS ?
                 selectedRecipe.getSteps().get(selectedStepPos).getDescription() :
                 selectedRecipe.getIngredients().get(0).getIngredient();
-        ((TextView) rootView.findViewById(R.id.recipe_step_description)).setText(description);
+        descriptionTextView = (TextView) rootView.findViewById(R.id.recipe_step_description);
+        descriptionTextView.setText(description);
 
-        ImageView previous = (ImageView) rootView.findViewById(recipe_step_previous_button);
-        ImageView next = (ImageView) rootView.findViewById(R.id.recipe_step_next_button);
+        previous = (ImageView) rootView.findViewById(recipe_step_previous_button);
+        next = (ImageView) rootView.findViewById(R.id.recipe_step_next_button);
         previous.setOnClickListener(this);
         next.setOnClickListener(this);
 
@@ -74,7 +80,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             next.setVisibility(View.GONE);
         }
 
-        FrameLayout frameLayout = (FrameLayout) rootView.findViewById(R.id.recipe_step_upper_area);
+        frameLayout = (FrameLayout) rootView.findViewById(R.id.recipe_step_upper_area);
         if(selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS) {
             if (!TextUtils.isEmpty(selectedRecipe.getSteps().get(selectedStepPos).getVideoUrl())) {
                 frameLayout.addView(inflater.inflate(R.layout.recipestep_video, container, false));
@@ -93,14 +99,39 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     public void onClick(View view) {
         switch(view.getId()) {
             case recipe_step_previous_button:
-                // TODO Go to previous step
-                // TODO Pass the whole Recipe to make things easier here
+                updateFragmentForPos(selectedStepPos-1);
                 Toast.makeText(getActivity(), "previous", Toast.LENGTH_SHORT).show();
                 break;
             case recipe_step_next_button:
-                // TODO Go to next step
+                updateFragmentForPos(selectedStepPos+1);
                 Toast.makeText(getActivity(), "next", Toast.LENGTH_SHORT).show();
                 break;
+        }
+    }
+
+    private void updateFragmentForPos(int newPosition) {
+        if(newPosition > RecipeStepsAdapter.NO_STEP_SELECTED_POS && newPosition < selectedRecipe.getSteps().size()) {
+            // TODO Replace video/image
+
+            // Replace title
+            getActivity().setTitle(selectedRecipe.getSteps().get(newPosition).getShortDescription());
+
+            // Replace description
+            descriptionTextView.setText(selectedRecipe.getSteps().get(newPosition).getDescription());
+
+            if(!isTwoPane) {
+                if (newPosition == 0) {
+                    // TODO Grey the Previous button
+                } else if (newPosition == selectedRecipe.getSteps().size() - 1) {
+                    // TODO Grey the Next button
+                } else {
+                    // TODO Ungrey both
+                }
+            }
+
+            selectedStepPos = newPosition;
+        } else {
+            // TODO Display ingredients
         }
     }
 }
