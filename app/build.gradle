@@ -45,6 +45,8 @@ dependencies {
     // See: https://stackoverflow.com/questions/44198856/glide-does-not-resolve-its-method
     compile 'com.github.bumptech.glide:glide:3.7.0'
 
+    compile 'com.google.android.exoplayer:exoplayer:r2.1.1'
+
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.retrofit2:converter-jackson:2.3.0'
 
