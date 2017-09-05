@@ -116,16 +116,11 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         frameLayout = (FrameLayout) rootView.findViewById(R.id.recipe_step_upper_area);
         if(selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS) {
             exchangeUpperPart(selectedStepPos);
+        } else {
+            // If we display the ingredients, hide the upper frame layout
+            frameLayout.setVisibility(View.GONE);
         }
         return rootView;
-    }
-
-    private String formatAllIngredients() {
-        String ingredientsString = "";
-        for (Ingredient ingredient :selectedRecipe.getIngredients()) {
-            ingredientsString = ingredientsString +Utils.formatFloatToString(ingredient.getQuantity()) + " (" +ingredient.getMeasure() +") " +ingredient.getIngredient() +"\n";
-        }
-        return ingredientsString;
     }
 
     @Override
@@ -236,6 +231,8 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
 
     private void updateFragmentForPos(int newPosition) {
         if(newPosition > RecipeStepsAdapter.NO_STEP_SELECTED_POS && newPosition < selectedRecipe.getSteps().size()) {
+            frameLayout.setVisibility(View.VISIBLE);
+
             // Replace the upper part
             exchangeUpperPart(newPosition);
 
@@ -248,6 +245,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             descriptionTextView.setText(selectedRecipe.getSteps().get(newPosition).getDescription());
         } else {
             frameLayout.removeAllViews();
+            frameLayout.setVisibility(View.GONE);
 
             getActivity().setTitle(getString(R.string.recipe_ingredient_title));
             descriptionTextView.setText(formatAllIngredients());
@@ -282,6 +280,14 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
                 previous.setClickable(true);
             }
         }
+    }
+
+    private String formatAllIngredients() {
+        String ingredientsString = "";
+        for (Ingredient ingredient :selectedRecipe.getIngredients()) {
+            ingredientsString = ingredientsString +Utils.formatFloatToString(ingredient.getQuantity()) + " (" +ingredient.getMeasure() +") " +ingredient.getIngredient() +"\n";
+        }
+        return ingredientsString;
     }
 
     @Override
