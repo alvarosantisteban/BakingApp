@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -51,12 +52,30 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recipestep_list);
         recyclerView.setAdapter(new RecipeStepsAdapter(recipe.getSteps(), this));
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
+                recyclerView.getContext(), DividerItemDecoration.VERTICAL);
+        recyclerView.addItemDecoration(dividerItemDecoration);
 
         if (findViewById(R.id.recipestep_detail_container) != null) {
             // The detail container view will be present only in the large-screen layouts (res/values-w900dp).
             // If this view is present, then the activity should be in two-pane mode.
             isTwoPane = true;
+
+            // Load by default the ingredients fragment to avoid displaying a blank space
+            loadFragmentForPosition(RecipeStepsAdapter.NO_STEP_SELECTED_POS);
         }
+    }
+
+    private void loadFragmentForPosition(int noStepSelectedPos) {
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(RecipeStepDetailFragment.ARG_RECIPE, recipe);
+        arguments.putInt(RecipeStepDetailFragment.ARG_RECIPE_STEP_POS, noStepSelectedPos);
+        arguments.putBoolean(RecipeStepDetailFragment.ARG_IS_TWO_PANE, isTwoPane);
+        RecipeStepDetailFragment fragment = new RecipeStepDetailFragment();
+        fragment.setArguments(arguments);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.recipestep_detail_container, fragment)
+                .commit();
     }
 
     @Override
@@ -73,15 +92,7 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
     @Override
     public void onItemClick(int stepPosition) {
         if (isTwoPane) {
-            Bundle arguments = new Bundle();
-            arguments.putParcelable(RecipeStepDetailFragment.ARG_RECIPE, recipe);
-            arguments.putInt(RecipeStepDetailFragment.ARG_RECIPE_STEP_POS, stepPosition);
-            arguments.putBoolean(RecipeStepDetailFragment.ARG_IS_TWO_PANE, isTwoPane);
-            RecipeStepDetailFragment fragment = new RecipeStepDetailFragment();
-            fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.recipestep_detail_container, fragment)
-                    .commit();
+            loadFragmentForPosition(stepPosition);
         } else {
             Intent intent = new Intent(this, RecipeStepDetailActivity.class);
             intent.putExtra(RecipeStepDetailFragment.ARG_RECIPE, recipe);
