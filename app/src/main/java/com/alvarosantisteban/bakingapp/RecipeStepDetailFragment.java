@@ -133,19 +133,9 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         releasePlayer();
     }
 
-    private void exchangeUpperPart(int pos) {
-        frameLayout.removeAllViews();
-        if (!TextUtils.isEmpty(selectedRecipe.getSteps().get(pos).getVideoUrl())) {
-            // Add the player view
-            frameLayout.addView(playerView);
-
-            // Initialize the player.
-            initializePlayer(Uri.parse(selectedRecipe.getSteps().get(pos).getVideoUrl()));
-        } else if(!TextUtils.isEmpty(selectedRecipe.getSteps().get(pos).getImageUrl())) {
-            // Add the image view
-            frameLayout.addView(placeholderImageView);
-        }
-    }
+    ////////////////////////////
+    // PLAYER
+    ////////////////////////////
 
     /**
      * Initialize ExoPlayer.
@@ -187,17 +177,50 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     }
 
     @Override
-    public void onClick(View view) {
-        if(exoPlayer != null) {
-            exoPlayer.stop();
-        }
-        switch(view.getId()) {
-            case recipe_step_previous_button:
-                updateFragmentForPos(selectedStepPos-1);
-                break;
-            case recipe_step_next_button:
-                updateFragmentForPos(selectedStepPos+1);
-                break;
+    public void onTimelineChanged(Timeline timeline, Object manifest) {
+        // Do nothing
+    }
+
+    @Override
+    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+        // Do nothing
+    }
+
+    @Override
+    public void onLoadingChanged(boolean isLoading) {
+        // Do nothing
+    }
+
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        // TODO
+    }
+
+    @Override
+    public void onPlayerError(ExoPlaybackException error) {
+        Log.e(TAG, error.toString());
+    }
+
+    @Override
+    public void onPositionDiscontinuity() {
+        // Do nothing
+    }
+    
+    ////////////////////////////
+    // UI
+    ////////////////////////////
+
+    private void exchangeUpperPart(int pos) {
+        frameLayout.removeAllViews();
+        if (!TextUtils.isEmpty(selectedRecipe.getSteps().get(pos).getVideoUrl())) {
+            // Add the player view
+            frameLayout.addView(playerView);
+
+            // Initialize the player.
+            initializePlayer(Uri.parse(selectedRecipe.getSteps().get(pos).getVideoUrl()));
+        } else if(!TextUtils.isEmpty(selectedRecipe.getSteps().get(pos).getImageUrl())) {
+            // Add the image view
+            frameLayout.addView(placeholderImageView);
         }
     }
 
@@ -252,32 +275,17 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     }
 
     @Override
-    public void onTimelineChanged(Timeline timeline, Object manifest) {
-        // Do nothing
-    }
-
-    @Override
-    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-        // Do nothing
-    }
-
-    @Override
-    public void onLoadingChanged(boolean isLoading) {
-        // Do nothing
-    }
-
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        // TODO
-    }
-
-    @Override
-    public void onPlayerError(ExoPlaybackException error) {
-        Log.e(TAG, error.toString());
-    }
-
-    @Override
-    public void onPositionDiscontinuity() {
-        // Do nothing
+    public void onClick(View view) {
+        if(exoPlayer != null) {
+            exoPlayer.stop();
+        }
+        switch(view.getId()) {
+            case recipe_step_previous_button:
+                updateFragmentForPos(selectedStepPos-1);
+                break;
+            case recipe_step_next_button:
+                updateFragmentForPos(selectedStepPos+1);
+                break;
+        }
     }
 }
