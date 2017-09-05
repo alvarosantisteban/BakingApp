@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.alvarosantisteban.bakingapp.model.Ingredient;
 import com.alvarosantisteban.bakingapp.model.Recipe;
+import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
@@ -219,7 +220,16 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             // Initialize the player.
             initializePlayer(Uri.parse(selectedRecipe.getSteps().get(pos).getVideoUrl()));
         } else if(!TextUtils.isEmpty(selectedRecipe.getSteps().get(pos).getImageUrl())) {
+            // Load the image
+            Glide.with(getActivity())
+                    .load(selectedRecipe.getSteps().get(pos).getImageUrl())
+                    .centerCrop()
+                    .placeholder(R.drawable.mortar_placeholder)
+                    .into(placeholderImageView);
             // Add the image view
+            frameLayout.addView(placeholderImageView);
+        } else {
+            // Add the image view which will contain the default placeholder
             frameLayout.addView(placeholderImageView);
         }
     }
