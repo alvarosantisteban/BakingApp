@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.alvarosantisteban.bakingapp.model.Ingredient;
 import com.alvarosantisteban.bakingapp.model.Recipe;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -81,7 +81,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
 
             String title = selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS ?
                     selectedRecipe.getSteps().get(selectedStepPos).getShortDescription() :
-                    selectedRecipe.getIngredients().get(0).getIngredient();
+                    getString(R.string.recipe_ingredient_title);
             getActivity().setTitle(title);
         }
     }
@@ -92,11 +92,11 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         View rootView = inflater.inflate(R.layout.recipestep_detail, container, false);
         String description = selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS ?
                 selectedRecipe.getSteps().get(selectedStepPos).getDescription() :
-                selectedRecipe.getIngredients().get(0).getIngredient();
+                formatAllIngredients();
         descriptionTextView = (TextView) rootView.findViewById(R.id.recipe_step_description);
         descriptionTextView.setText(description);
 
-        previous = (ImageView) rootView.findViewById(recipe_step_previous_button);
+        previous = (ImageView) rootView.findViewById(R.id.recipe_step_previous_button);
         next = (ImageView) rootView.findViewById(R.id.recipe_step_next_button);
         previous.setOnClickListener(this);
         next.setOnClickListener(this);
@@ -115,10 +115,16 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         frameLayout = (FrameLayout) rootView.findViewById(R.id.recipe_step_upper_area);
         if(selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS) {
             exchangeUpperPart(selectedStepPos);
-        } else {
-            // TODO Display ingredients
         }
         return rootView;
+    }
+
+    private String formatAllIngredients() {
+        String ingredientsString = "";
+        for (Ingredient ingredient :selectedRecipe.getIngredients()) {
+            ingredientsString = ingredientsString +Utils.formatFloatToString(ingredient.getQuantity()) + " (" +ingredient.getMeasure() +") " +ingredient.getIngredient() +"\n";
+        }
+        return ingredientsString;
     }
 
     @Override
@@ -188,11 +194,9 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         switch(view.getId()) {
             case recipe_step_previous_button:
                 updateFragmentForPos(selectedStepPos-1);
-                Toast.makeText(getActivity(), "previous", Toast.LENGTH_SHORT).show();
                 break;
             case recipe_step_next_button:
                 updateFragmentForPos(selectedStepPos+1);
-                Toast.makeText(getActivity(), "next", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -212,7 +216,8 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         } else {
             frameLayout.removeAllViews();
 
-            // TODO Display ingredients
+            getActivity().setTitle(getString(R.string.recipe_ingredient_title));
+            descriptionTextView.setText(formatAllIngredients());
         }
         maybeChangeNavigationArrows(newPosition);
 

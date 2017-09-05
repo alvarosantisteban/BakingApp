@@ -24,4 +24,13 @@ public final class Utils {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
+
+    // Taken from https://stackoverflow.com/a/14126736
+    public static String formatFloatToString(float d) {
+        if(d == (long) d) {
+            return String.format("%d", (long) d);
+        } else {
+            return String.format("%s", d);
+        }
+    }
 }
