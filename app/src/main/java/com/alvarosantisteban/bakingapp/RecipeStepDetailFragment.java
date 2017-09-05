@@ -105,7 +105,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         playerView = (SimpleExoPlayerView) inflater.inflate(R.layout.recipestep_video, container, false);
         placeholderImageView = (ImageView) inflater.inflate(R.layout.recipestep_image, container, false);
 
-        if(isTwoPane) {
+        if (isTwoPane) {
             // Hide the navigation arrows, they are not needed
             previous.setVisibility(View.GONE);
             next.setVisibility(View.GONE);
@@ -114,13 +114,29 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         }
 
         frameLayout = (FrameLayout) rootView.findViewById(R.id.recipe_step_upper_area);
-        if(selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS) {
+        if (selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS) {
             exchangeUpperPart(selectedStepPos);
         } else {
             // If we display the ingredients, hide the upper frame layout
             frameLayout.setVisibility(View.GONE);
         }
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(exoPlayer != null) {
+            exoPlayer.setPlayWhenReady(true);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(exoPlayer != null) {
+            exoPlayer.setPlayWhenReady(false);
+        }
     }
 
     @Override
@@ -230,6 +246,9 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     }
 
     private void updateFragmentForPos(int newPosition) {
+        if(exoPlayer != null) {
+            exoPlayer.stop();
+        }
         if(newPosition > RecipeStepsAdapter.NO_STEP_SELECTED_POS && newPosition < selectedRecipe.getSteps().size()) {
             frameLayout.setVisibility(View.VISIBLE);
 
@@ -292,9 +311,6 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        if(exoPlayer != null) {
-            exoPlayer.stop();
-        }
         switch(view.getId()) {
             case recipe_step_previous_button:
                 updateFragmentForPos(selectedStepPos-1);
