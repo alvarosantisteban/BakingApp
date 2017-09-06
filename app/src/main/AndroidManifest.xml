@@ -37,6 +37,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.alvarosantisteban.bakingapp.RecipeStepListActivity" />
         </activity>
+
+        <receiver android:name=".IngredientsWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/ingredients_widget_provider_info" />
+        </receiver>
     </application>
 
 </manifest>

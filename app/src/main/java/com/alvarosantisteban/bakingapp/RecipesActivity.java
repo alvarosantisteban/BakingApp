@@ -1,5 +1,7 @@
 package com.alvarosantisteban.bakingapp;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -158,5 +160,9 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
         Intent intent = new Intent(this, RecipeStepListActivity.class);
         intent.putExtra(RECIPE_EXTRA, recipe);
         startActivity(intent);
+
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, IngredientsWidgetProvider.class));
+        IngredientsWidgetProvider.updateRecipe(this, appWidgetManager, appWidgetIds, recipe);
     }
 }

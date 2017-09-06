@@ -14,7 +14,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.alvarosantisteban.bakingapp.model.Ingredient;
 import com.alvarosantisteban.bakingapp.model.Recipe;
 import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -37,6 +36,7 @@ import com.google.android.exoplayer2.util.Util;
 
 import static com.alvarosantisteban.bakingapp.R.id.recipe_step_next_button;
 import static com.alvarosantisteban.bakingapp.R.id.recipe_step_previous_button;
+import static com.alvarosantisteban.bakingapp.Utils.formatAllIngredients;
 
 /**
  * A fragment representing a single RecipeStep detail screen.
@@ -93,7 +93,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         View rootView = inflater.inflate(R.layout.recipestep_detail, container, false);
         String description = selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS ?
                 selectedRecipe.getSteps().get(selectedStepPos).getDescription() :
-                formatAllIngredients();
+                Utils.formatAllIngredients(selectedRecipe);
         descriptionTextView = (TextView) rootView.findViewById(R.id.recipe_step_description);
         descriptionTextView.setText(description);
 
@@ -267,7 +267,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             frameLayout.setVisibility(View.GONE);
 
             getActivity().setTitle(getString(R.string.recipe_ingredient_title));
-            descriptionTextView.setText(formatAllIngredients());
+            descriptionTextView.setText(formatAllIngredients(selectedRecipe));
         }
         maybeChangeNavigationArrows(newPosition);
 
@@ -299,14 +299,6 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
                 previous.setClickable(true);
             }
         }
-    }
-
-    private String formatAllIngredients() {
-        String ingredientsString = "";
-        for (Ingredient ingredient :selectedRecipe.getIngredients()) {
-            ingredientsString = ingredientsString +Utils.formatFloatToString(ingredient.getQuantity()) + " (" +ingredient.getMeasure() +") " +ingredient.getIngredient() +"\n";
-        }
-        return ingredientsString;
     }
 
     @Override

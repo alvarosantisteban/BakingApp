@@ -5,6 +5,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 
+import com.alvarosantisteban.bakingapp.model.Ingredient;
+import com.alvarosantisteban.bakingapp.model.Recipe;
+
 /**
  * Helper class with static methods.
  */
@@ -32,5 +35,13 @@ public final class Utils {
         } else {
             return String.format("%s", d);
         }
+    }
+
+    static String formatAllIngredients(@NonNull final Recipe recipe) {
+        String ingredientsString = "";
+        for (Ingredient ingredient : recipe.getIngredients()) {
+            ingredientsString = ingredientsString +Utils.formatFloatToString(ingredient.getQuantity()) + " (" +ingredient.getMeasure() +") " +ingredient.getIngredient() +"\n";
+        }
+        return ingredientsString;
     }
 }
