@@ -18,7 +18,7 @@ class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.RecipeS
 
     static final int NO_STEP_SELECTED_POS = -1;
 
-    public interface OnItemClickListener {
+    interface OnItemClickListener {
         void onItemClick(int stepPosition);
     }
 

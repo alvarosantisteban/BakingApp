@@ -3,7 +3,8 @@
     android:id="@+id/appwidget_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/colorPrimary">
 
     <TextView
         android:id="@+id/appwidget_title"
@@ -15,13 +16,21 @@
         android:textSize="24sp"
         android:textStyle="bold|italic" />
 
-    <TextView
-        android:id="@+id/appwidget_ingredients"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ListView
+        android:id="@+id/appwidget_ingredients_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_margin="8dp"
-        tools:text="ingredients ingredients ingredients ingredients ingredients "
+        android:loopViews="true"
+        tools:listitem="@layout/ingredients_widget_item"/>
+
+    <TextView
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
         android:textColor="#ffffff"
-        android:textSize="20sp"
-        android:textStyle="bold|italic" />
+        android:textStyle="bold"
+        android:text="@string/empty_view_text"
+        android:textSize="20sp" />
 </LinearLayout>

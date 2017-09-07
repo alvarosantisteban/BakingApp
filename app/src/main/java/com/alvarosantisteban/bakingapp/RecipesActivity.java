@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -19,6 +20,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.alvarosantisteban.bakingapp.model.Recipe;
+import com.alvarosantisteban.bakingapp.widget.IngredientsSharedPreferences;
+import com.alvarosantisteban.bakingapp.widget.IngredientsWidgetProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Arrays;
@@ -161,8 +164,11 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
         intent.putExtra(RECIPE_EXTRA, recipe);
         startActivity(intent);
 
+        // Save the ingredients into SharedPreferences and let the widget know that it should display
+        // the ingredients of a new recipe
+        IngredientsSharedPreferences.putIngredients(PreferenceManager.getDefaultSharedPreferences(this), recipe.getIngredients());
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
         int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, IngredientsWidgetProvider.class));
-        IngredientsWidgetProvider.updateRecipe(this, appWidgetManager, appWidgetIds, recipe);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.appwidget_ingredients_list);
     }
 }
