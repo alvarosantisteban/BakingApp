@@ -9,4 +9,4 @@
     android:layout_height="match_parent"
     app:layoutManager="LinearLayoutManager"
     tools:context="com.alvarosantisteban.bakingapp.RecipeStepListActivity"
-    tools:listitem="@layout/recipe_ingredient" />
+    tools:listitem="@layout/recipestep_list_item" />

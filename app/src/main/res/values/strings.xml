@@ -9,4 +9,5 @@
     <string name="title_recipestep_detail">RecipeStep Detail</string>
     <string name="recipe_ingredient_title">Recipe ingredients</string>
     <string name="empty_view_text">Nothing to see yet</string>
+    <string name="recipe_placeholder">Default image for a recipe</string>
 </resources>

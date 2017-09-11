@@ -5,8 +5,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,18 +18,13 @@ import android.widget.TextView;
 import com.alvarosantisteban.bakingapp.model.Recipe;
 import com.bumptech.glide.Glide;
 import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.ExoPlaybackException;
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -36,7 +32,6 @@ import com.google.android.exoplayer2.util.Util;
 
 import static com.alvarosantisteban.bakingapp.R.id.recipe_step_next_button;
 import static com.alvarosantisteban.bakingapp.R.id.recipe_step_previous_button;
-import static com.alvarosantisteban.bakingapp.Utils.formatAllIngredients;
 
 /**
  * A fragment representing a single RecipeStep detail screen.
@@ -44,7 +39,7 @@ import static com.alvarosantisteban.bakingapp.Utils.formatAllIngredients;
  * in two-pane mode (on tablets) or a {@link RecipeStepDetailActivity}
  * on handsets.
  */
-public class RecipeStepDetailFragment extends Fragment implements View.OnClickListener, ExoPlayer.EventListener {
+public class RecipeStepDetailFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = RecipeStepDetailFragment.class.getSimpleName();
 
@@ -60,10 +55,11 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     private ImageView previous;
     private ImageView next;
     private TextView descriptionTextView;
+    private FrameLayout frameLayout;
     private SimpleExoPlayer exoPlayer;
     private SimpleExoPlayerView playerView;
     private ImageView placeholderImageView;
-    private FrameLayout frameLayout;
+    private RecyclerView ingredientsRv;
 
     public RecipeStepDetailFragment() {
     }
@@ -92,8 +88,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.recipestep_detail, container, false);
         String description = selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS ?
-                selectedRecipe.getSteps().get(selectedStepPos).getDescription() :
-                Utils.formatAllIngredients(selectedRecipe);
+                selectedRecipe.getSteps().get(selectedStepPos).getDescription() : "";
         descriptionTextView = (TextView) rootView.findViewById(R.id.recipe_step_description);
         descriptionTextView.setText(description);
 
@@ -104,6 +99,8 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
 
         playerView = (SimpleExoPlayerView) inflater.inflate(R.layout.recipestep_video, container, false);
         placeholderImageView = (ImageView) inflater.inflate(R.layout.recipestep_image, container, false);
+        ingredientsRv = (RecyclerView) inflater.inflate(R.layout.recipestep_ingredients_rv, container, false);
+        ingredientsRv.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         if (isTwoPane) {
             // Hide the navigation arrows, they are not needed
@@ -114,12 +111,8 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         }
 
         frameLayout = (FrameLayout) rootView.findViewById(R.id.recipe_step_upper_area);
-        if (selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS) {
-            exchangeUpperPart(selectedStepPos);
-        } else {
-            // If we display the ingredients, hide the upper frame layout
-            frameLayout.setVisibility(View.GONE);
-        }
+        exchangeUpperPart(selectedStepPos);
+
         return rootView;
     }
 
@@ -161,9 +154,6 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             exoPlayer = ExoPlayerFactory.newSimpleInstance(getActivity(), trackSelector, loadControl);
             playerView.setPlayer(exoPlayer);
 
-            // Set the ExoPlayer.EventListener to this activity.
-            exoPlayer.addListener(this);
-
             // Prepare the MediaSource.
             prepareMediaSource(mediaUri);
         }
@@ -187,93 +177,84 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             exoPlayer = null;
         }
     }
-
-    @Override
-    public void onTimelineChanged(Timeline timeline, Object manifest) {
-        // Do nothing
-    }
-
-    @Override
-    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
-        // Do nothing
-    }
-
-    @Override
-    public void onLoadingChanged(boolean isLoading) {
-        // Do nothing
-    }
-
-    @Override
-    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        // TODO
-    }
-
-    @Override
-    public void onPlayerError(ExoPlaybackException error) {
-        Log.e(TAG, error.toString());
-    }
-
-    @Override
-    public void onPositionDiscontinuity() {
-        // Do nothing
-    }
     
     ////////////////////////////
     // UI
     ////////////////////////////
 
+    /**
+     * Exchange the layout used in the upper part of the window, so a recyclerview with ingredients,
+     * a video player or an image is displayed.
+     *
+     * @param pos the position of the step of the current recipe.
+     */
     private void exchangeUpperPart(int pos) {
         frameLayout.removeAllViews();
-        if (!TextUtils.isEmpty(selectedRecipe.getSteps().get(pos).getVideoUrl())) {
-            // Add the player view
-            frameLayout.addView(playerView);
+        if(pos > RecipeStepsAdapter.NO_STEP_SELECTED_POS) {
+            if (!TextUtils.isEmpty(selectedRecipe.getSteps().get(pos).getVideoUrl())) {
+                // Add the player view
+                frameLayout.addView(playerView);
 
-            // Initialize the player.
-            initializePlayer(Uri.parse(selectedRecipe.getSteps().get(pos).getVideoUrl()));
-        } else if(!TextUtils.isEmpty(selectedRecipe.getSteps().get(pos).getImageUrl())) {
-            // Load the image
-            Glide.with(getActivity())
-                    .load(selectedRecipe.getSteps().get(pos).getImageUrl())
-                    .centerCrop()
-                    .placeholder(R.drawable.mortar_placeholder)
-                    .into(placeholderImageView);
-            // Add the image view
-            frameLayout.addView(placeholderImageView);
-        } else {
-            // Add the image view which will contain the default placeholder
-            frameLayout.addView(placeholderImageView);
+                // Initialize the player.
+                initializePlayer(Uri.parse(selectedRecipe.getSteps().get(pos).getVideoUrl()));
+            } else if (!TextUtils.isEmpty(selectedRecipe.getSteps().get(pos).getImageUrl())) {
+                // Load the image
+                Glide.with(getActivity())
+                        .load(selectedRecipe.getSteps().get(pos).getImageUrl())
+                        .centerCrop()
+                        .placeholder(R.drawable.mortar_placeholder)
+                        .into(placeholderImageView);
+                // Add the image view
+                frameLayout.addView(placeholderImageView);
+            } else {
+                // Add the image view which will contain the default placeholder
+                frameLayout.addView(placeholderImageView);
+            }
+        }else {
+            // Display the ingredients in a recyclerview
+            frameLayout.addView(ingredientsRv);
+            ingredientsRv.setAdapter(new IngredientsGridAdapter(selectedRecipe.getIngredients()));
         }
     }
 
+    /**
+     * Updates the current fragment so the right elements are displayed for the position passed by
+     * parameter.
+     *
+     * @param newPosition the position of the step of the current recipe.
+     */
     private void updateFragmentForPos(int newPosition) {
         if(exoPlayer != null) {
             exoPlayer.stop();
         }
+        // Replace the upper part
+        exchangeUpperPart(newPosition);
         if(newPosition > RecipeStepsAdapter.NO_STEP_SELECTED_POS && newPosition < selectedRecipe.getSteps().size()) {
-            frameLayout.setVisibility(View.VISIBLE);
-
-            // Replace the upper part
-            exchangeUpperPart(newPosition);
+            // Replace title and description
+            getActivity().setTitle(selectedRecipe.getSteps().get(newPosition).getShortDescription());
+            descriptionTextView.setVisibility(View.VISIBLE);
+            descriptionTextView.setText(selectedRecipe.getSteps().get(newPosition).getDescription());
 
             // Replace video
             Uri mediaUri = Uri.parse(selectedRecipe.getSteps().get(newPosition).getVideoUrl());
             prepareMediaSource(mediaUri);
 
-            // Replace title and description
-            getActivity().setTitle(selectedRecipe.getSteps().get(newPosition).getShortDescription());
-            descriptionTextView.setText(selectedRecipe.getSteps().get(newPosition).getDescription());
-        } else {
-            frameLayout.removeAllViews();
-            frameLayout.setVisibility(View.GONE);
 
+        } else {
+            descriptionTextView.setVisibility(View.GONE);
             getActivity().setTitle(getString(R.string.recipe_ingredient_title));
-            descriptionTextView.setText(formatAllIngredients(selectedRecipe));
         }
         maybeChangeNavigationArrows(newPosition);
 
         selectedStepPos = newPosition;
     }
 
+    /**
+     * Checks if for the position passed by parameter is it needed to activate/deactivate the
+     * navigation arrows displayed at the bottom for non two pane mode.
+     *
+     * @param newPosition the position of the step of the current recipe.
+     */
     private void maybeChangeNavigationArrows(int newPosition) {
         if(!isTwoPane) {
             if (newPosition == RecipeStepsAdapter.NO_STEP_SELECTED_POS) {

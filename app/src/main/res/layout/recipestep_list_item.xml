@@ -5,6 +5,7 @@
     android:id="@+id/recipe_step_text"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:textSize="18sp"
     android:paddingTop="@dimen/fab_margin"
     android:paddingBottom="@dimen/fab_margin"
     android:text="@string/recipe_ingredient_title"
