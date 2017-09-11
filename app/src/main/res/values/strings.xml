@@ -10,4 +10,8 @@
     <string name="recipe_ingredient_title">Recipe ingredients</string>
     <string name="empty_view_text">Nothing to see yet</string>
     <string name="recipe_placeholder">Default image for a recipe</string>
+
+    <string name="ingredient_ingredient_tag">Ingredient</string>
+    <string name="ingredient_quantity_tag">Qty.</string>
+    <string name="ingredient_measure_tag">Unit</string>
 </resources>

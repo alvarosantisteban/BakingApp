@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -76,7 +77,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
             selectedStepPos = getArguments().getInt(ARG_RECIPE_STEP_POS);
             isTwoPane = getArguments().getBoolean(ARG_IS_TWO_PANE);
 
-            String title = selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS ?
+            String title = isRecipeStep(selectedStepPos) ?
                     selectedRecipe.getSteps().get(selectedStepPos).getShortDescription() :
                     getString(R.string.recipe_ingredient_title);
             getActivity().setTitle(title);
@@ -86,11 +87,16 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        boolean isRecipeStep = isRecipeStep(selectedStepPos);
+
         View rootView = inflater.inflate(R.layout.recipestep_detail, container, false);
-        String description = selectedStepPos > RecipeStepsAdapter.NO_STEP_SELECTED_POS ?
-                selectedRecipe.getSteps().get(selectedStepPos).getDescription() : "";
+
+        String description = isRecipeStep ?
+                selectedRecipe.getSteps().get(selectedStepPos).getDescription() :
+                "";
         descriptionTextView = (TextView) rootView.findViewById(R.id.recipe_step_description);
         descriptionTextView.setText(description);
+        descriptionTextView.setVisibility(isRecipeStep ? View.VISIBLE : View.GONE);
 
         previous = (ImageView) rootView.findViewById(R.id.recipe_step_previous_button);
         next = (ImageView) rootView.findViewById(R.id.recipe_step_next_button);
@@ -101,6 +107,9 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         placeholderImageView = (ImageView) inflater.inflate(R.layout.recipestep_image, container, false);
         ingredientsRv = (RecyclerView) inflater.inflate(R.layout.recipestep_ingredients_rv, container, false);
         ingredientsRv.setLayoutManager(new LinearLayoutManager(getActivity()));
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
+                ingredientsRv.getContext(), DividerItemDecoration.VERTICAL);
+        ingredientsRv.addItemDecoration(dividerItemDecoration);
 
         if (isTwoPane) {
             // Hide the navigation arrows, they are not needed
@@ -190,7 +199,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
      */
     private void exchangeUpperPart(int pos) {
         frameLayout.removeAllViews();
-        if(pos > RecipeStepsAdapter.NO_STEP_SELECTED_POS) {
+        if(isRecipeStep(pos)) {
             if (!TextUtils.isEmpty(selectedRecipe.getSteps().get(pos).getVideoUrl())) {
                 // Add the player view
                 frameLayout.addView(playerView);
@@ -213,7 +222,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         }else {
             // Display the ingredients in a recyclerview
             frameLayout.addView(ingredientsRv);
-            ingredientsRv.setAdapter(new IngredientsGridAdapter(selectedRecipe.getIngredients()));
+            ingredientsRv.setAdapter(new IngredientsGridAdapter(selectedRecipe.getIngredients(), getActivity()));
         }
     }
 
@@ -229,7 +238,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         }
         // Replace the upper part
         exchangeUpperPart(newPosition);
-        if(newPosition > RecipeStepsAdapter.NO_STEP_SELECTED_POS && newPosition < selectedRecipe.getSteps().size()) {
+        if(isRecipeStep(newPosition) && newPosition < selectedRecipe.getSteps().size()) {
             // Replace title and description
             getActivity().setTitle(selectedRecipe.getSteps().get(newPosition).getShortDescription());
             descriptionTextView.setVisibility(View.VISIBLE);
@@ -292,5 +301,14 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
                 updateFragmentForPos(selectedStepPos+1);
                 break;
         }
+    }
+
+    /**
+     * Check if the position passed by parameter belongs to a recipe step.
+     * @param position the position of the step of the current recipe.
+     * @return true if the position is for a recipe step, false if it is for displaying the ingredients
+     */
+    private boolean isRecipeStep(int position){
+        return position > RecipeStepsAdapter.NO_STEP_SELECTED_POS;
     }
 }

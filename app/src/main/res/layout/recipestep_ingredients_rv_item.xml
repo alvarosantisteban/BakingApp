@@ -5,7 +5,8 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:padding="20dp"
+    android:background="@color/greyLight">
     <TextView
         android:id="@+id/ingredient_item_description"
         android:layout_width="0dp"
