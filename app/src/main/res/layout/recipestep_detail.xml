@@ -17,22 +17,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:background="@color/colorPrimaryDark"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"/>
+            android:layout_margin="@dimen/general_margin"/>
 
         <TextView
             android:id="@+id/recipe_step_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="ddesfew efewfwef fejifj l;efj wl;fjewfoj OFJEFWEJFop jfeowpfj ojf ewogjopagjeogmnfe f jew'pofjfo jfefjemw ofpjo jewofpj ewofpjefopejwp"
-            android:layout_marginTop="12dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:textSize="18sp"
-            android:elevation="2dp"
-            android:padding="5dp"
+            android:layout_marginTop="@dimen/general_margin"
+            android:layout_marginLeft="@dimen/general_margin"
+            android:layout_marginRight="@dimen/general_margin"
+            android:textSize="@dimen/ingredient_description_text_size"
+            android:elevation="@dimen/ingredient_description_elevation"
+            android:padding="@dimen/ingredient_description_padding"
             android:background="@color/greyPink"/>
 
         <LinearLayout
@@ -44,9 +41,9 @@
             <ImageView
                 android:id="@+id/recipe_step_previous_button"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="@dimen/navigation_arrow_height"
                 android:layout_weight="1"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="@dimen/general_margin"
                 android:src="@drawable/ic_arrow_back_black_48px"
                 android:clickable="true"
                 android:background="?attr/selectableItemBackground"/>
@@ -54,9 +51,9 @@
             <ImageView
                 android:id="@+id/recipe_step_next_button"
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="@dimen/navigation_arrow_height"
                 android:layout_weight="1"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="@dimen/general_margin"
                 android:src="@drawable/ic_arrow_forward_black_48px"
                 android:clickable="true"
                 android:background="?attr/selectableItemBackground"/>

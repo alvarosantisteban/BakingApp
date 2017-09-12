@@ -2,10 +2,23 @@
 <resources>
     <bool name="isTablet">false</bool>
     <bool name="isLandscape">false</bool>
-    <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="recipesteps_list_paddingTopBottom">16dp</dimen>
+    <dimen name="ingredients_list_padding">20dp</dimen>
     <dimen name="app_bar_height">200dp</dimen>
     <dimen name="item_width">200dp</dimen>
-    <dimen name="text_margin">16dp</dimen>
+
+    <dimen name="general_margin">8dp</dimen>
+
+    <dimen name="navigation_arrow_height">50dp</dimen>
+
+    <dimen name="ingredient_description_text_size">18sp</dimen>
+    <dimen name="ingredient_description_elevation">2dp</dimen>
+    <dimen name="ingredient_description_padding">5dp</dimen>
+
+    <dimen name="image_non_available_placeholder_height">150dp</dimen>
+
+    <dimen name="recipe_name_size">45sp</dimen>
 
     <!--
 Refer to App Widget Documentation for margin information

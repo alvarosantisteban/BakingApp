@@ -3,14 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
+    android:paddingTop="@dimen/general_margin"
+    android:paddingBottom="@dimen/general_margin"
     android:background="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/recipe_image"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="@dimen/image_non_available_placeholder_height"
         tools:src="@drawable/mortar_placeholder"
         android:tint="@color/greyPink"
         android:contentDescription="@string/recipe_image_content_description" />
@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:textSize="45sp"
+        android:textSize="@dimen/recipe_name_size"
         android:textStyle="bold"
         android:textColor="@color/black"
         tools:text="Recipe name"/>
