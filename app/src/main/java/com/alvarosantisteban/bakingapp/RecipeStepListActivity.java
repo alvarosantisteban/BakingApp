@@ -6,9 +6,11 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.alvarosantisteban.bakingapp.model.Recipe;
 
@@ -28,6 +30,10 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
      */
     private boolean isTwoPane;
     private Recipe recipe;
+    private RecyclerView recipeStepsRecyclerView;
+    private LinearLayoutManager layoutManager;
+    public static int index = -1;
+    public static int top = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +57,12 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
             }
         }
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recipestep_list);
-        recyclerView.setAdapter(new RecipeStepsAdapter(recipe.getSteps(), this));
+        recipeStepsRecyclerView = (RecyclerView) findViewById(R.id.recipestep_list);
+        recipeStepsRecyclerView.setAdapter(new RecipeStepsAdapter(recipe.getSteps(), this));
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(
-                recyclerView.getContext(), DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
+                recipeStepsRecyclerView.getContext(), DividerItemDecoration.VERTICAL);
+        recipeStepsRecyclerView.addItemDecoration(dividerItemDecoration);
+        layoutManager = (LinearLayoutManager) recipeStepsRecyclerView.getLayoutManager();
 
         if (findViewById(R.id.recipestep_detail_container) != null) {
             // The detail container view will be present only in the large-screen layouts (res/values-w900dp).
@@ -66,6 +73,27 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
             loadFragmentForPosition(RecipeStepsAdapter.NO_STEP_SELECTED_POS);
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Scroll to the last visited position of the recycler view
+        if(index != -1) {
+            layoutManager.scrollToPositionWithOffset(index, top);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Save the current recycler view's position
+        index = layoutManager.findFirstVisibleItemPosition();
+        View v = recipeStepsRecyclerView.getChildAt(0);
+        top = (v == null) ? 0 : (v.getTop() - recipeStepsRecyclerView.getPaddingTop());
+    }
+
 
     private void loadFragmentForPosition(int noStepSelectedPos) {
         Bundle arguments = new Bundle();
