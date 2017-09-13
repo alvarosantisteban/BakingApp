@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.design.widget.Snackbar;
 import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,7 +18,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.alvarosantisteban.bakingapp.model.Recipe;
 import com.alvarosantisteban.bakingapp.widget.IngredientsSharedPreferences;
@@ -73,7 +73,8 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
             getIdlingResource();
             downloadInitialJson();
         } else {
-            Toast.makeText(this, getString(R.string.error_no_internet_connection), Toast.LENGTH_LONG).show();
+            progressBar.setVisibility(View.GONE);
+            Snackbar.make(findViewById(R.id.recipes_layout), getString(R.string.error_no_internet_connection), Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -129,8 +130,8 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
             @Override
             public void onFailure(@NonNull Call<Recipe[]> call, @NonNull Throwable t) {
                 Log.e(TAG, "Error downloading or parsing recipes.", t);
-
-                Toast.makeText(RecipesActivity.this, R.string.error_download_json, Toast.LENGTH_SHORT).show();
+                progressBar.setVisibility(View.GONE);
+                Snackbar.make(findViewById(R.id.recipes_layout), getString(R.string.error_download_json), Snackbar.LENGTH_LONG).show();
             }
         });
     }
