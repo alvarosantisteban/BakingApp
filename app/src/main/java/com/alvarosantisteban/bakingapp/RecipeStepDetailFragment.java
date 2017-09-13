@@ -291,6 +291,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         maybeChangeNavigationArrows(newPosition);
 
         selectedStepPos = newPosition;
+        getArguments().putInt(ARG_RECIPE_STEP_POS, selectedStepPos);
     }
 
     /**
