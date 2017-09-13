@@ -10,17 +10,17 @@
         android:id="@+id/appwidget_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="@dimen/general_margin"
         android:text="@string/recipe_ingredient_title"
         android:textColor="#ffffff"
-        android:textSize="24sp"
+        android:textSize="@dimen/widget_title_size"
         android:textStyle="bold|italic" />
 
     <ListView
         android:id="@+id/appwidget_ingredients_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="8dp"
+        android:layout_margin="@dimen/general_margin"
         android:loopViews="true"
         tools:listitem="@layout/ingredients_widget_item"/>
 
@@ -32,5 +32,5 @@
         android:textColor="#ffffff"
         android:textStyle="bold"
         android:text="@string/empty_view_text"
-        android:textSize="20sp" />
+        android:textSize="@dimen/ingredient_description_text_size" />
 </LinearLayout>

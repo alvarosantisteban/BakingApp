@@ -5,8 +5,8 @@
     android:id="@+id/appwidget_ingredient"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_margin="@dimen/general_margin"
     tools:text="I am an ingredient"
     android:textColor="#ffffff"
-    android:textSize="16sp"
+    android:textSize="@dimen/ingredient_description_text_size"
     android:textStyle="italic"/>
