@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -39,13 +38,13 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
 
     private static final String TAG = RecipesActivity.class.getSimpleName();
 
-    private static final String LIST_POS = "bundleListPos";
     static final String RECIPE_EXTRA = "recipeExtra";
 
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
-    private int currentPosition;
-    private boolean hasBeenScrolledAutomatically;
+    private RecyclerView.LayoutManager layoutManager;
+    public static int index = -1;
+    public static int top = -1;
 
     @Nullable
     SimpleIdlingResource simpleIdlingResource;
@@ -58,10 +57,17 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         recyclerView = (RecyclerView) findViewById(R.id.recipes_list);
 
-        recyclerView.setLayoutManager(Utils.isTablet(this) ? new GridLayoutManager(this, 2) : new LinearLayoutManager(this));
+        layoutManager = Utils.isTablet(this) ? new GridLayoutManager(this, 2) : new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+    }
 
-        if(savedInstanceState != null) {
-            currentPosition = savedInstanceState.getInt(LIST_POS);
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Scroll to the last visited position of the recycler view
+        if(index != -1) {
+            ((LinearLayoutManager) layoutManager).scrollToPositionWithOffset(index, top);
         }
     }
 
@@ -79,12 +85,13 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+    protected void onPause() {
+        super.onPause();
 
-        // Save list's position
-        currentPosition = ((LinearLayoutManager) recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
-        outState.putInt(LIST_POS, currentPosition);
+        // Save the current recycler view's position
+        index = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
+        View v = recyclerView.getChildAt(0);
+        top = (v == null) ? 0 : (v.getTop() - recyclerView.getPaddingTop());
     }
 
     /**
@@ -118,8 +125,6 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
                         RecipesAdapter adapter = new RecipesAdapter(Arrays.asList(recipeList), RecipesActivity.this, RecipesActivity.this);
                         recyclerView.setAdapter(adapter);
 
-                        scrollToLastVisitedPosition();
-
                         if (simpleIdlingResource != null) {
                             simpleIdlingResource.setIdleState(true);
                         }
@@ -143,19 +148,6 @@ public class RecipesActivity extends AppCompatActivity implements RecipesAdapter
             simpleIdlingResource = new SimpleIdlingResource();
             }
         return simpleIdlingResource;
-    }
-
-    private void scrollToLastVisitedPosition() {
-        if(!hasBeenScrolledAutomatically) {
-            Handler handler = new Handler();
-            Runnable r = new Runnable() {
-                public void run() {
-                    recyclerView.scrollToPosition(currentPosition);
-                    hasBeenScrolledAutomatically = true;
-                }
-            };
-            handler.postDelayed(r, 200);
-        }
     }
 
     @Override
