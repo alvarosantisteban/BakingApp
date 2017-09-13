@@ -126,25 +126,38 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        if (Util.SDK_INT > 23) {
+            exchangeUpperPart(selectedStepPos);
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        if(exoPlayer != null) {
-            exoPlayer.setPlayWhenReady(true);
+
+        if ((Util.SDK_INT <= 23)) {
+            exchangeUpperPart(selectedStepPos);
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if(exoPlayer != null) {
-            exoPlayer.setPlayWhenReady(false);
+
+        if (Util.SDK_INT <= 23) {
+            releasePlayer();
         }
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        releasePlayer();
+    public void onStop() {
+        super.onStop();
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+        }
     }
 
     ////////////////////////////
@@ -165,6 +178,8 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
 
             // Prepare the MediaSource.
             prepareMediaSource(mediaUri);
+        } else {
+            exoPlayer.setPlayWhenReady(true);
         }
     }
 
