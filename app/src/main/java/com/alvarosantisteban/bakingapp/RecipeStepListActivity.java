@@ -2,6 +2,7 @@ package com.alvarosantisteban.bakingapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
@@ -92,6 +93,9 @@ public class RecipeStepListActivity extends AppCompatActivity implements RecipeS
     @Override
     public void onItemClick(int stepPosition) {
         if (isTwoPane) {
+            // Reset the video position
+            VideoPositionSharedPreferences.resetVideoPosition(PreferenceManager.getDefaultSharedPreferences(this));
+
             loadFragmentForPosition(stepPosition);
         } else {
             Intent intent = new Intent(this, RecipeStepDetailActivity.class);

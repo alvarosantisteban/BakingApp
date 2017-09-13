@@ -3,6 +3,7 @@ package com.alvarosantisteban.bakingapp;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
@@ -47,6 +48,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     public static final String ARG_RECIPE = "recipe";
     public static final String ARG_RECIPE_STEP_POS = "recipeStepPOS";
     public static final String ARG_IS_TWO_PANE = "isTwoPane";
+
     static final String RECIPE_USER_AGENT = "RecipeUserAgent";
 
     private int selectedStepPos;
@@ -61,6 +63,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     private SimpleExoPlayerView playerView;
     private ImageView placeholderImageView;
     private RecyclerView ingredientsRv;
+    private long lastSavedVideoPos;
 
     public RecipeStepDetailFragment() {
     }
@@ -120,6 +123,12 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         }
 
         frameLayout = (FrameLayout) rootView.findViewById(R.id.recipe_step_upper_area);
+
+        if(selectedRecipe != null && isRecipeStep && selectedRecipe.getSteps().get(selectedStepPos) != null) {
+            // Get the video position from shared preferences
+            lastSavedVideoPos = VideoPositionSharedPreferences.getVideoPosition(PreferenceManager.getDefaultSharedPreferences(getActivity()), selectedRecipe.getSteps().get(selectedStepPos).getId());
+        }
+
         exchangeUpperPart(selectedStepPos);
 
         return rootView;
@@ -129,6 +138,10 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     public void onStart() {
         super.onStart();
 
+        if(selectedRecipe != null && isRecipeStep(selectedStepPos) && selectedRecipe.getSteps().get(selectedStepPos) != null) {
+            // Get the video position from shared preferences
+            lastSavedVideoPos = VideoPositionSharedPreferences.getVideoPosition(PreferenceManager.getDefaultSharedPreferences(getActivity()), selectedRecipe.getSteps().get(selectedStepPos).getId());
+        }
         if (Util.SDK_INT > 23) {
             exchangeUpperPart(selectedStepPos);
         }
@@ -147,6 +160,10 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
     public void onPause() {
         super.onPause();
 
+        // Save the video position in shared preferences
+        if(exoPlayer != null) {
+            VideoPositionSharedPreferences.putVideoPosition(PreferenceManager.getDefaultSharedPreferences(getActivity()), selectedRecipe.getSteps().get(selectedStepPos).getId(), exoPlayer.getCurrentPosition());
+        }
         if (Util.SDK_INT <= 23) {
             releasePlayer();
         }
@@ -189,6 +206,9 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
                 getActivity(), userAgent), new DefaultExtractorsFactory(), null, null);
         exoPlayer.prepare(mediaSource);
         exoPlayer.setPlayWhenReady(true);
+        if(lastSavedVideoPos > 0) {
+            exoPlayer.seekTo(lastSavedVideoPos);
+        }
     }
 
     /**
@@ -308,6 +328,11 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
+        // Reset the video position
+        VideoPositionSharedPreferences.resetVideoPosition(PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        lastSavedVideoPos = VideoPositionSharedPreferences.INVALID_LAST_VIDEO_POS;
+
+        // Update the fragment
         switch(view.getId()) {
             case recipe_step_previous_button:
                 updateFragmentForPos(selectedStepPos-1);
