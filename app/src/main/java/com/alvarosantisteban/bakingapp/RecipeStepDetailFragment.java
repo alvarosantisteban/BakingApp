@@ -161,7 +161,7 @@ public class RecipeStepDetailFragment extends Fragment implements View.OnClickLi
         super.onPause();
 
         // Save the video position in shared preferences
-        if(exoPlayer != null) {
+        if(exoPlayer != null && selectedStepPos >= 0) {
             VideoPositionSharedPreferences.putVideoPosition(PreferenceManager.getDefaultSharedPreferences(getActivity()), selectedRecipe.getSteps().get(selectedStepPos).getId(), exoPlayer.getCurrentPosition());
         }
         if (Util.SDK_INT <= 23) {
